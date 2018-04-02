@@ -1,0 +1,5 @@
+<resources>
+	<string name="app_name">Ocean\'s4</string>
+	<string name="errorNetwork">Проверьте подключение к интернету и повторите попытку.</string>
+	<string name="errorServerUnavailable">Произошла ошибка. Повторите попытку через пару минут.</string>
+</resources>
