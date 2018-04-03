@@ -1,9 +1,12 @@
 package com.ocean.oceans4.teammates;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.ocean.oceans4.R;
@@ -18,9 +21,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ListOfTeammatesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements View.OnClickListener {
 
+	private Context context;
+
 	private List<Teammate> listOfTeammates;
 	private RecyclerView recyclerView;
 	private TeammateClickListener clickListener;
+
+	private int lastPosition = -1;
 
 	public ListOfTeammatesAdapter(TeammateClickListener clickListener) {
 		this.clickListener = clickListener;
@@ -35,6 +42,7 @@ public class ListOfTeammatesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 		View inflatedView = LayoutInflater.from(parent.getContext())
 			.inflate(R.layout.item_teammate, parent, false);
+		context = parent.getContext();
 		return new ViewHolder(inflatedView);
 	}
 
@@ -42,6 +50,7 @@ public class ListOfTeammatesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 	public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 		((ViewHolder) holder).onBind(position);
 		holder.itemView.setOnClickListener(this);
+		setAnimation(holder.itemView, position);
 	}
 
 	@Override
@@ -93,6 +102,17 @@ public class ListOfTeammatesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 			Picasso.get()
 				.load(currentTeammate.photo)
 				.into(mPhoto);
+		}
+	}
+
+	private void setAnimation(View viewToAnimate, int position)
+	{
+		// zaeboshil animaciu
+		if (position > lastPosition)
+		{
+			Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
+			viewToAnimate.startAnimation(animation);
+			lastPosition = position;
 		}
 	}
 }
