@@ -5,10 +5,13 @@ import com.ocean.oceans4.base.UIModel;
 import com.ocean.oceans4.data.Teammate;
 
 import java.util.List;
+import java.util.Map;
 
 public class ListOfTeammatesUIModel extends UIModel {
 
-	private List<Teammate> teammates;
+	private Map<String, Teammate> teammates;
+
+	private Teammate teammate;
 
 	public ListOfTeammatesUIModel(FragmentState state) {
 		super(state);
@@ -18,12 +21,21 @@ public class ListOfTeammatesUIModel extends UIModel {
 		super(error);
 	}
 
-	public List<Teammate> getTeammates() {
+	public Map<String, Teammate> getTeammates() {
 		return teammates;
 	}
 
-	public ListOfTeammatesUIModel setTeammates(List<Teammate> teammates) {
+	public ListOfTeammatesUIModel setTeammates(Map<String, Teammate> teammates) {
 		this.teammates = teammates;
+		return this;
+	}
+
+	public Teammate getTeammate() {
+		return teammate;
+	}
+
+	public ListOfTeammatesUIModel setTeammate(Teammate teammate) {
+		this.teammate = teammate;
 		return this;
 	}
 }

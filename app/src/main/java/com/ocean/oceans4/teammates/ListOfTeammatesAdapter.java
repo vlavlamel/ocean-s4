@@ -1,7 +1,9 @@
 package com.ocean.oceans4.teammates;
 
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,15 +28,22 @@ public class ListOfTeammatesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 	private List<Teammate> listOfTeammates;
 	private RecyclerView recyclerView;
 	private TeammateClickListener clickListener;
+	private Context ctx;
 
 	private int lastPosition = -1;
 
-	public ListOfTeammatesAdapter(TeammateClickListener clickListener) {
+	public ListOfTeammatesAdapter(TeammateClickListener clickListener, Context ctx) {
 		this.clickListener = clickListener;
+		this.ctx = ctx;
 	}
 
 	public void setData(List<Teammate> listOfTeammates) {
 		this.listOfTeammates = listOfTeammates;
+		notifyDataSetChanged();
+	}
+
+	public void addData(Teammate teammate) {
+		listOfTeammates.add(teammate);
 		notifyDataSetChanged();
 	}
 
@@ -99,17 +108,18 @@ public class ListOfTeammatesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 			Teammate currentTeammate = listOfTeammates.get(position);
 			mName.setText(currentTeammate.name);
 			mPost.setText(currentTeammate.post);
-			Picasso.get()
-				.load(currentTeammate.photo)
-				.into(mPhoto);
+			if (TextUtils.isEmpty(currentTeammate.photo)) {
+				mPhoto.setImageDrawable(ContextCompat.getDrawable(ctx, R.drawable.no_photo_account));
+			} else {
+				Picasso.get()
+					.load(currentTeammate.photo)
+					.into(mPhoto);
+			}
 		}
 	}
 
-	private void setAnimation(View viewToAnimate, int position)
-	{
-		// zaeboshil animaciu
-		if (position > lastPosition)
-		{
+	private void setAnimation(View viewToAnimate, int position) {
+		if (position > lastPosition) {
 			Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
 			viewToAnimate.startAnimation(animation);
 			lastPosition = position;

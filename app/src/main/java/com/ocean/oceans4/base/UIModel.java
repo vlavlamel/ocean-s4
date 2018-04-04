@@ -11,6 +11,7 @@ public class UIModel {
 
 	public UIModel(Throwable error) {
 		this.error = error;
+		state = FragmentState.ERROR;
 	}
 
 	public FragmentState getState() {

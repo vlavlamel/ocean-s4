@@ -6,6 +6,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.View;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.HttpException;
+import com.ocean.oceans4.R;
+
+import java.net.ConnectException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 
@@ -31,6 +39,14 @@ public abstract class BaseFragment<E extends Event, M extends UIModel> extends F
 			.onNext(event);
 	}
 
+	public String onError(Throwable throwable) {
+		if (isNetworkException(throwable)) {
+			return getString(R.string.errorNetwork);
+		} else {
+			return getString(R.string.errorServerUnavailable);
+		}
+	}
+
 	@Override
 	public void onDestroyView() {
 		garbage.clear();
@@ -38,6 +54,12 @@ public abstract class BaseFragment<E extends Event, M extends UIModel> extends F
 	}
 
 	public abstract void setCurrentState(M model);
+
+	public static boolean isNetworkException(Throwable throwable) {
+		return throwable instanceof ConnectException || throwable instanceof UnknownHostException
+			|| throwable instanceof SocketTimeoutException
+			|| throwable instanceof SocketException;
+	}
 
 	/*
 		Requires method to connect your presenter to fragment. Too bad implementation, has to be refactored. Alternative is to use dagger, but do not have enough time.

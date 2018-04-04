@@ -1,5 +1,8 @@
 package com.ocean.oceans4.base;
 
+import com.ocean.oceans4.api.Api;
+import com.ocean.oceans4.api.ApiRepo;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -8,8 +11,7 @@ import io.reactivex.subjects.PublishSubject;
 
 public abstract class BasePresenterImplementation<E extends Event, M extends UIModel> implements BasePresenter<E, M> {
 
-	private E viewEvent;
-	private M viewModel;
+	public Api oceanApi = ApiRepo.getOceanApi();
 
 	private PublishSubject<E> viewSubject = PublishSubject.create();
 	private Observable<M> viewObservable = viewSubject.share()

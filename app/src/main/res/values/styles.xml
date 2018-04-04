@@ -8,4 +8,13 @@
 		<item name="colorAccent">@color/colorAccent</item>
 	</style>
 
+	<style xmlns:app="http://schemas.android.com/apk/res-auto" name="EditText">
+		<item name="android:layout_marginLeft">10dp</item>
+		<item name="android:layout_marginRight">10dp</item>
+		<item name="met_baseColor">@android:color/black</item>
+		<item name="met_errorColor">@android:color/holo_red_dark</item>
+		<item name="met_floatingLabel">highlight</item>
+		<item name="met_primaryColor">@color/colorPrimaryDark</item>
+	</style>
+
 </resources>
