@@ -3,4 +3,8 @@
 	<string name="errorNetwork">Проверьте подключение к интернету и повторите попытку.</string>
 	<string name="errorServerUnavailable">Произошла ошибка. Повторите попытку через пару минут.</string>
 	<string name="add_teammate">Добавить участника</string>
+	<string name="name">Имя</string>
+	<string name="post">Роль в команде</string>
+	<string name="group">Группа</string>
+	<string name="about">О себе</string>
 </resources>

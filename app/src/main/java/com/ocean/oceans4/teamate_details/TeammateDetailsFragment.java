@@ -76,7 +76,7 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 		mName.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dialog = new ChangeInfoDialog("Имя", mName.getText()
+				dialog = new ChangeInfoDialog(getString(R.string.name), mName.getText()
 					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.NAME);
 				dialog.showDialog();
 			}
@@ -85,7 +85,7 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 		mPost.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dialog = new ChangeInfoDialog("Роль", mPost.getText()
+				dialog = new ChangeInfoDialog(getString(R.string.post), mPost.getText()
 					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.POST);
 				dialog.showDialog();
 			}
@@ -94,7 +94,7 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 		mAbout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dialog = new ChangeInfoDialog("О себе", mAbout.getText()
+				dialog = new ChangeInfoDialog(getString(R.string.about), mAbout.getText()
 					.toString(), getActivity(), TeammateDetailsFragment.this, true, ChangeInfo.ABOUT);
 				dialog.showDialog();
 			}
@@ -103,7 +103,7 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 		mGroup.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				dialog = new ChangeInfoDialog("Группа", mGroup.getText()
+				dialog = new ChangeInfoDialog(getString(R.string.group), mGroup.getText()
 					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.GROUP);
 				dialog.showDialog();
 			}
