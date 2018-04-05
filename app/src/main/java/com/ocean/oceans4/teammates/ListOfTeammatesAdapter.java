@@ -52,7 +52,10 @@ public class ListOfTeammatesAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 		View inflatedView = LayoutInflater.from(parent.getContext())
 			.inflate(R.layout.item_teammate, parent, false);
 		context = parent.getContext();
-		return new ViewHolder(inflatedView);
+		ViewHolder viewHolder = new ViewHolder(inflatedView);
+//		int color = R.color.colorBreeze
+//		viewHolder.itemView.setBackgroundColor();
+		return viewHolder;
 	}
 
 	@Override
