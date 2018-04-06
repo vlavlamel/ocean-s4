@@ -8,6 +8,6 @@ REST API*. Такой подход нам показался более подх
 
 Как оказалось позднее Firebase REST API не имеет возможности загружать файл, для этого существует Google Cloud Storage, поэтому в нашем приложении нет возможности загружать и изменять фотографии участников (нам самим было обидно)(.
 
-На момент создания: Gradle 4.4 ; Android Studio 3.1
+На момент создания: Gradle 4.4 ; Android Studio 3.1.
 Тестировали на устройствах: Samsung Galaxy S7 (API 24), Galaxy S5 mini (API 23); Xiaomi Redmi Pro 4 (API 23); 
 Emulator Nexus 5(API 24) 
