@@ -6,6 +6,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -68,46 +71,23 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 					.popBackStack();
 			}
 		});
+		mToolbar.inflateMenu(R.menu.menu_temmate);
+		mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				permitRedacting();
+				return true;
+			}
+		});
 		renderInfo((Teammate) getArguments().getSerializable(TEAMMATE_TAG));
 	}
 
 	private void renderInfo(Teammate teammate) {
-		mName.setText(teammate.name);
-		mName.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog = new ChangeInfoDialog(getString(R.string.name), mName.getText()
-					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.NAME);
-				dialog.showDialog();
-			}
-		});
 		mPost.setText(teammate.post);
-		mPost.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog = new ChangeInfoDialog(getString(R.string.post), mPost.getText()
-					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.POST);
-				dialog.showDialog();
-			}
-		});
 		mAbout.setText(teammate.about);
-		mAbout.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog = new ChangeInfoDialog(getString(R.string.about), mAbout.getText()
-					.toString(), getActivity(), TeammateDetailsFragment.this, true, ChangeInfo.ABOUT);
-				dialog.showDialog();
-			}
-		});
 		mGroup.setText(teammate.group);
-		mGroup.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				dialog = new ChangeInfoDialog(getString(R.string.group), mGroup.getText()
-					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.GROUP);
-				dialog.showDialog();
-			}
-		});
+		mName.setText(teammate.name);
+
 		if (teammate.photo != null) {
 			Picasso.get()
 				.load(teammate.photo)
@@ -115,6 +95,45 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 		} else {
 			mPhoto.setImageDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.no_photo_account));
 		}
+	}
+
+	private void permitRedacting(){
+        mName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
+		mName.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog = new ChangeInfoDialog(getString(R.string.name), mName.getText()
+						.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.NAME);
+				dialog.showDialog();
+			}
+		});
+        mPost.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
+        mPost.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog = new ChangeInfoDialog(getString(R.string.post), mPost.getText()
+						.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.POST);
+				dialog.showDialog();
+			}
+		});
+        mAbout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
+        mAbout.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog = new ChangeInfoDialog(getString(R.string.about), mAbout.getText()
+						.toString(), getActivity(), TeammateDetailsFragment.this, true, ChangeInfo.ABOUT);
+				dialog.showDialog();
+			}
+		});
+        mGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
+        mGroup.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				dialog = new ChangeInfoDialog(getString(R.string.group), mGroup.getText()
+						.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.GROUP);
+				dialog.showDialog();
+			}
+		});
 	}
 
 	@Override
@@ -172,5 +191,11 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 				sendEvent(new TeammateDetailsUIEvent.ChangeGroupEvent(id, data));
 				break;
 		}
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.menu_temmate, menu);
+		super.onCreateOptionsMenu(menu, inflater);
 	}
 }
