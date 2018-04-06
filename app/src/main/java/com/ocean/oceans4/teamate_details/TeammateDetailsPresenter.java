@@ -27,7 +27,9 @@ public class TeammateDetailsPresenter extends BasePresenterImplementation<Teamma
 							teammateDetailsUIEventObservable.ofType(TeammateDetailsUIEvent.ChangePostEvent.class)
 								.compose(changePost()),
 							teammateDetailsUIEventObservable.ofType(TeammateDetailsUIEvent.ChangeAboutEvent.class)
-								.compose(changeAbout()));
+								.compose(changeAbout()))
+							.mergeWith(teammateDetailsUIEventObservable.ofType(TeammateDetailsUIEvent.RatingEvent.class)
+								.compose(changeRating()));
 					}
 				});
 			}
@@ -47,7 +49,8 @@ public class TeammateDetailsPresenter extends BasePresenterImplementation<Teamma
 							.map(new Function<String, TeammateDetailsUIModel>() {
 								@Override
 								public TeammateDetailsUIModel apply(String s) throws Exception {
-									ApiRepo.getSubject().onNext(s);
+									ApiRepo.getSubject()
+										.onNext(s);
 									return new TeammateDetailsUIModel(FragmentState.SUCCESS).setData(s);
 								}
 							})
@@ -77,7 +80,8 @@ public class TeammateDetailsPresenter extends BasePresenterImplementation<Teamma
 							.map(new Function<String, TeammateDetailsUIModel>() {
 								@Override
 								public TeammateDetailsUIModel apply(String s) throws Exception {
-									ApiRepo.getSubject().onNext(s);
+									ApiRepo.getSubject()
+										.onNext(s);
 									return new TeammateDetailsUIModel(FragmentState.SUCCESS).setData(s);
 								}
 							})
@@ -107,7 +111,8 @@ public class TeammateDetailsPresenter extends BasePresenterImplementation<Teamma
 							.map(new Function<String, TeammateDetailsUIModel>() {
 								@Override
 								public TeammateDetailsUIModel apply(String s) throws Exception {
-									ApiRepo.getSubject().onNext(s);
+									ApiRepo.getSubject()
+										.onNext(s);
 									return new TeammateDetailsUIModel(FragmentState.SUCCESS).setData(s);
 								}
 							})
@@ -137,11 +142,41 @@ public class TeammateDetailsPresenter extends BasePresenterImplementation<Teamma
 							.map(new Function<String, TeammateDetailsUIModel>() {
 								@Override
 								public TeammateDetailsUIModel apply(String s) throws Exception {
-									ApiRepo.getSubject().onNext(s);
+									ApiRepo.getSubject()
+										.onNext(s);
 									return new TeammateDetailsUIModel(FragmentState.SUCCESS).setData(s);
 								}
 							})
 							.startWith(new TeammateDetailsUIModel(FragmentState.IN_PROGRESS))
+							.onErrorReturn(new Function<Throwable, TeammateDetailsUIModel>() {
+								@Override
+								public TeammateDetailsUIModel apply(Throwable throwable) throws Exception {
+									return new TeammateDetailsUIModel(throwable);
+								}
+							});
+					}
+				});
+			}
+		};
+	}
+
+	public ObservableTransformer<TeammateDetailsUIEvent.RatingEvent, TeammateDetailsUIModel> changeRating() {
+		return new ObservableTransformer<TeammateDetailsUIEvent.RatingEvent, TeammateDetailsUIModel>() {
+			@Override
+			public ObservableSource<TeammateDetailsUIModel> apply(Observable<TeammateDetailsUIEvent.RatingEvent> upstream) {
+				return upstream.flatMap(new Function<TeammateDetailsUIEvent.RatingEvent, ObservableSource<TeammateDetailsUIModel>>() {
+					@Override
+					public ObservableSource<TeammateDetailsUIModel> apply(TeammateDetailsUIEvent.RatingEvent ratingEvent) throws Exception {
+						return oceanApi.changeRating(ratingEvent.getId(), ratingEvent.getRating())
+							.observeOn(AndroidSchedulers.mainThread())
+							.subscribeOn(Schedulers.io())
+							.flatMap(new Function<Float, ObservableSource<TeammateDetailsUIModel>>() {
+								@Override
+								public ObservableSource<TeammateDetailsUIModel> apply(Float aFloat) throws Exception {
+									ApiRepo.getSubject().onNext("rating");
+									return Observable.empty();
+								}
+							})
 							.onErrorReturn(new Function<Throwable, TeammateDetailsUIModel>() {
 								@Override
 								public TeammateDetailsUIModel apply(Throwable throwable) throws Exception {

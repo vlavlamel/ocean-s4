@@ -13,6 +13,7 @@ public class Teammate implements Serializable {
 	public String about;
 	public String group;
 	public int id;
+	public Float rating;
 
 	@JsonIgnore
 	public boolean isEmpty() {

@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,10 +17,29 @@ import com.ocean.oceans4.base.BaseFragment;
 import com.ocean.oceans4.data.Teammate;
 import com.squareup.picasso.Picasso;
 
+import org.reactivestreams.Subscriber;
+
+import java.util.concurrent.TimeUnit;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.BackpressureStrategy;
+import io.reactivex.Emitter;
+import io.reactivex.Flowable;
+import io.reactivex.FlowableEmitter;
+import io.reactivex.FlowableOnSubscribe;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Cancellable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent, TeammateDetailsUIModel> implements ChangeInfoDialog.SendData {
 
@@ -41,8 +58,29 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 	Unbinder unbinder;
 	@BindView(R.id.toolbar)
 	Toolbar mToolbar;
+	@BindView(R.id.rating)
+	MaterialRatingBar mRating;
 
 	ChangeInfoDialog dialog;
+
+	private ObservableEmitter<Float> emitter;
+
+	private Observable<Float> ratingObservable = Observable.create(new ObservableOnSubscribe<Float>() {
+		@Override
+		public void subscribe(ObservableEmitter<Float> emitter) throws Exception {
+			TeammateDetailsFragment.this.emitter = emitter;
+			TeammateDetailsFragment.this.emitter.setCancellable(new Cancellable() {
+				@Override
+				public void cancel() throws Exception {
+					TeammateDetailsFragment.this.emitter = null;
+				}
+			});
+		}
+	})
+		.debounce(400, TimeUnit.MILLISECONDS)
+		.distinctUntilChanged()
+		.subscribeOn(Schedulers.io())
+		.observeOn(AndroidSchedulers.mainThread());
 
 	public static TeammateDetailsFragment getInstance(Teammate teammate) {
 		Bundle bundle = new Bundle();
@@ -80,6 +118,23 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 			}
 		});
 		renderInfo((Teammate) getArguments().getSerializable(TEAMMATE_TAG));
+		initRating();
+		garbage.add(ratingObservable.subscribe(new Consumer<Float>() {
+			@Override
+			public void accept(Float aFloat) throws Exception {
+				int id = ((Teammate) getArguments().getSerializable(TEAMMATE_TAG)).id;
+				sendEvent(new TeammateDetailsUIEvent.RatingEvent(id, aFloat));
+			}
+		}));
+	}
+
+	private void initRating() {
+		mRating.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
+			@Override
+			public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
+				emitter.onNext(rating);
+			}
+		});
 	}
 
 	private void renderInfo(Teammate teammate) {
@@ -87,6 +142,7 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 		mAbout.setText(teammate.about);
 		mGroup.setText(teammate.group);
 		mName.setText(teammate.name);
+		if (teammate.rating != null) mRating.setRating(teammate.rating);
 
 		if (teammate.photo != null) {
 			Picasso.get()
@@ -97,68 +153,72 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 		}
 	}
 
-	private void permitRedacting(){
-        mName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
+	private void permitRedacting() {
+		mName.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
 		mName.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				dialog = new ChangeInfoDialog(getString(R.string.name), mName.getText()
-						.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.NAME);
+					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.NAME);
 				dialog.showDialog();
 			}
 		});
-        mPost.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
-        mPost.setOnClickListener(new View.OnClickListener() {
+		mPost.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
+		mPost.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				dialog = new ChangeInfoDialog(getString(R.string.post), mPost.getText()
-						.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.POST);
+					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.POST);
 				dialog.showDialog();
 			}
 		});
-        mAbout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
-        mAbout.setOnClickListener(new View.OnClickListener() {
+		mAbout.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
+		mAbout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				dialog = new ChangeInfoDialog(getString(R.string.about), mAbout.getText()
-						.toString(), getActivity(), TeammateDetailsFragment.this, true, ChangeInfo.ABOUT);
+					.toString(), getActivity(), TeammateDetailsFragment.this, true, ChangeInfo.ABOUT);
 				dialog.showDialog();
 			}
 		});
-        mGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
-        mGroup.setOnClickListener(new View.OnClickListener() {
+		mGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_mode_edit, 0);
+		mGroup.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				dialog = new ChangeInfoDialog(getString(R.string.group), mGroup.getText()
-						.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.GROUP);
+					.toString(), getActivity(), TeammateDetailsFragment.this, false, ChangeInfo.GROUP);
 				dialog.showDialog();
 			}
 		});
 
-        mToolbar.getMenu().findItem(R.id.action_edit).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                // finish editing
-                mName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                mName.setOnClickListener(null);
-                mAbout.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                mAbout.setOnClickListener(null);
-                mGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                mGroup.setOnClickListener(null);
-                mPost.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
-                mPost.setOnClickListener(null);
-                mToolbar.getMenu().findItem(R.id.action_edit).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-                mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        permitRedacting();
-                        return true;
-                    }
-                });
-                return true;
-            }
-        });
+		mToolbar.getMenu()
+			.findItem(R.id.action_edit)
+			.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+		mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				// finish editing
+				mName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+				mName.setOnClickListener(null);
+				mAbout.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+				mAbout.setOnClickListener(null);
+				mGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+				mGroup.setOnClickListener(null);
+				mPost.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+				mPost.setOnClickListener(null);
+				mToolbar.getMenu()
+					.findItem(R.id.action_edit)
+					.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+				mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+					@Override
+					public boolean onMenuItemClick(MenuItem item) {
+						permitRedacting();
+						return true;
+					}
+				});
+				return true;
+			}
+		});
 	}
 
 	@Override
@@ -166,7 +226,8 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 		switch (model.getState()) {
 			case ERROR:
 				if (dialog != null) dialog.dismissDialog();
-				Toast.makeText(getActivity(), onError(model.getError()), Toast.LENGTH_SHORT).show();
+				Toast.makeText(getActivity(), onError(model.getError()), Toast.LENGTH_SHORT)
+					.show();
 				break;
 			case SUCCESS:
 				if (dialog != null) {

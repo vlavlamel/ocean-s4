@@ -29,6 +29,9 @@ public interface Api {
 	@PUT("teammate/{id}/about.json")
 	Observable<String> changeAbout(@Path("id") int id, @Body String about);
 
+	@PUT("teammate/{id}/rating.json")
+	Observable<Float> changeRating(@Path("id") int id, @Body Float rating);
+
 	@PATCH("teammate.json")
 	Observable<Map<String, Teammate>> addTeammate(@Body Map<String, Teammate> addTeammate);
 }

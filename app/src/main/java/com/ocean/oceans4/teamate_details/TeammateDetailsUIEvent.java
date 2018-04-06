@@ -2,9 +2,11 @@ package com.ocean.oceans4.teamate_details;
 
 import com.ocean.oceans4.base.Event;
 
+import io.reactivex.Flowable;
+
 public class TeammateDetailsUIEvent extends Event {
 	private String data;
-	private int id;
+	protected int id;
 
 	public String getData() {
 		return data;
@@ -12,6 +14,10 @@ public class TeammateDetailsUIEvent extends Event {
 
 	public int getId() {
 		return id;
+	}
+
+	public TeammateDetailsUIEvent() {
+
 	}
 
 	public TeammateDetailsUIEvent(int id, String data) {
@@ -44,6 +50,20 @@ public class TeammateDetailsUIEvent extends Event {
 
 		public ChangePostEvent(int id, String data) {
 			super(id, data);
+		}
+	}
+
+	public static class RatingEvent extends TeammateDetailsUIEvent {
+
+		private Float rating;
+
+		public RatingEvent(int id, Float rating) {
+			this.rating = rating;
+			this.id = id;
+		}
+
+		public Float getRating() {
+			return rating;
 		}
 	}
 }

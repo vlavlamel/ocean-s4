@@ -20,7 +20,7 @@ import io.reactivex.functions.Consumer;
 public abstract class BaseFragment<E extends Event, M extends UIModel> extends Fragment {
 
 	private BasePresenter<E, M> presenter;
-	private CompositeDisposable garbage = new CompositeDisposable();
+	protected CompositeDisposable garbage = new CompositeDisposable();
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
