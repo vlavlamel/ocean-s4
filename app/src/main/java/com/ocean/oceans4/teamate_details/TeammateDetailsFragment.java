@@ -134,6 +134,31 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 				dialog.showDialog();
 			}
 		});
+
+        mToolbar.getMenu().findItem(R.id.action_edit).setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                // finish editing
+                mName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                mName.setOnClickListener(null);
+                mAbout.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                mAbout.setOnClickListener(null);
+                mGroup.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                mGroup.setOnClickListener(null);
+                mPost.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                mPost.setOnClickListener(null);
+                mToolbar.getMenu().findItem(R.id.action_edit).setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        permitRedacting();
+                        return true;
+                    }
+                });
+                return true;
+            }
+        });
 	}
 
 	@Override
@@ -191,11 +216,5 @@ public class TeammateDetailsFragment extends BaseFragment<TeammateDetailsUIEvent
 				sendEvent(new TeammateDetailsUIEvent.ChangeGroupEvent(id, data));
 				break;
 		}
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_temmate, menu);
-		super.onCreateOptionsMenu(menu, inflater);
 	}
 }
