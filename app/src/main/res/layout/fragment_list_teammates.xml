@@ -1,47 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.ocean.oceans4.base.StateView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/state_view"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	android:orientation="vertical">
 
-	<RelativeLayout
+	<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res-auto"
+		xmlns:tools="http://schemas.android.com/tools"
+		android:id="@+id/toolbar"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		app:viewType="Data">
+		android:layout_height="?attr/actionBarSize"
+		android:background="?attr/colorPrimary"
+		app:title="@string/team_name"
+		app:titleTextColor="@android:color/white" />
 
-		<android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
-			xmlns:app="http://schemas.android.com/apk/res-auto"
-			xmlns:tools="http://schemas.android.com/tools"
-			android:id="@+id/toolbar"
-			android:layout_width="match_parent"
-			android:layout_height="?attr/actionBarSize"
-			android:background="?attr/colorPrimary"
-			app:title="@string/team_name"
-			app:titleTextColor="@android:color/white" />
+	<com.ocean.oceans4.base.StateView
+		android:id="@+id/state_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
 
-		<android.support.v7.widget.RecyclerView
-			android:id="@+id/recycler_view"
+		<android.support.v4.widget.SwipeRefreshLayout
+			android:id="@+id/swipe_refresh"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:layout_above="@id/add_teammate"
-			android:layout_below="@id/toolbar"
-			tools:listitem="@layout/item_teammate" />
+			app:viewType="Data">
 
-		<TextView
-			android:id="@+id/add_teammate"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:background="@drawable/selectable_item_background"
-			android:gravity="center"
-			android:padding="20dp"
-			android:text="@string/add_teammate"
-			android:textAllCaps="true"
-			android:textColor="@color/cardview_light_background" />
+			<RelativeLayout
+				android:layout_width="match_parent"
+				android:layout_height="match_parent">
 
-	</RelativeLayout>
+				<android.support.v7.widget.RecyclerView
+					android:id="@+id/recycler_view"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_above="@id/add_teammate"
+					tools:listitem="@layout/item_teammate" />
 
+				<TextView
+					android:id="@+id/add_teammate"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:layout_alignParentBottom="true"
+					android:background="@drawable/selectable_item_background"
+					android:gravity="center"
+					android:padding="20dp"
+					android:text="@string/add_teammate"
+					android:textAllCaps="true"
+					android:textColor="@color/cardview_light_background" />
 
-</com.ocean.oceans4.base.StateView>
+			</RelativeLayout>
+
+		</android.support.v4.widget.SwipeRefreshLayout>
+
+	</com.ocean.oceans4.base.StateView>
+</LinearLayout>

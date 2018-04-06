@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
@@ -40,6 +41,8 @@ public class ListOfTeammatesFragment extends BaseFragment<ListOfTeammatesEvent, 
 	@BindView(R.id.add_teammate)
 	TextView mAddTeammate;
 	Unbinder unbinder;
+	@BindView(R.id.swipe_refresh)
+	SwipeRefreshLayout mSwipeRefresh;
 
 	ListOfTeammatesAdapter adapter;
 	AddTeammateDialog dialog;
@@ -64,6 +67,12 @@ public class ListOfTeammatesFragment extends BaseFragment<ListOfTeammatesEvent, 
 		if (adapter == null) adapter = new ListOfTeammatesAdapter(this, getActivity());
 		mRecyclerView.setAdapter(adapter);
 		initAddLink();
+		mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				sendEvent(new ListOfTeammatesEvent.GetTeammates());
+			}
+		});
 		sendEvent(new ListOfTeammatesEvent.GetTeammates());
 	}
 
@@ -93,16 +102,19 @@ public class ListOfTeammatesFragment extends BaseFragment<ListOfTeammatesEvent, 
 		switch (model.getState()) {
 			case ERROR:
 				if (dialog != null && dialog.isShowing()) dialog.dismissDialog();
+				mSwipeRefresh.setRefreshing(false);
 				mStateView.showDefaultErrorWithText(onError(model.getError()));
-				mStateView.getErrorLayout().setOnClickListener(new View.OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						sendEvent(new ListOfTeammatesEvent.GetTeammates());
-					}
-				});
+				mStateView.getErrorLayout()
+					.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							sendEvent(new ListOfTeammatesEvent.GetTeammates());
+						}
+					});
 				break;
 			case SUCCESS:
 				mStateView.showData();
+				mSwipeRefresh.setRefreshing(false);
 				if (model.getTeammates() != null) {
 					adapter.setData(new ArrayList<Teammate>(model.getTeammates()
 						.values()));
@@ -114,7 +126,7 @@ public class ListOfTeammatesFragment extends BaseFragment<ListOfTeammatesEvent, 
 			case IN_PROGRESS:
 				if (dialog != null && dialog.isShowing()) {
 					dialog.showProgress();
-				} else {
+				} else if (!mSwipeRefresh.isRefreshing()) {
 					mStateView.showProgress();
 				}
 				break;
